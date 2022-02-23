@@ -19,7 +19,11 @@ export default function Form(props) {
     props.onCancel();
   }
 
-  // const disableDefault = (event) => {event.preventDefault()};
+  const save = () => {
+    if (student && interviewer) props.onSave(student, interviewer);
+  }
+
+  // Disabling default behaviour: const disableDefault = (event) => {event.preventDefault()};
   const disableEnter = (event) => {event.key === 'Enter' && event.preventDefault();}
 
   return (
@@ -50,7 +54,7 @@ export default function Form(props) {
       <section className="appointment__card-right">
         <section className="appointment__actions">
           <Button danger onClick={cancel}>Cancel</Button>
-          <Button confirm onClick={props.onSave}>Save</Button>
+          <Button confirm onClick={save}>Save</Button>
         </section>
       </section>
     </main>

@@ -5,6 +5,10 @@ function getAppointmentsForDay(state, day) {
   return foundDay.appointments.map(x => state.appointments[`${x}`]);
 }
 
+// Interview object: { "student": String, "interviewer": number }
+// New interview object: { "student": String, "interviewer": String }
+// Given the interview object above, search for the interviewer name
+// and return the new interview object but with this found interviewer name
 function getInterview(state, interview) {
   if (!(interview && interview.interviewer && state.interviewers)) return null;
   return { ...interview, interviewer: state.interviewers[interview.interviewer]};
