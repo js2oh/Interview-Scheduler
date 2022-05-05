@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import "components/Appointment/styles.scss";
 
@@ -11,6 +11,17 @@ import Confirm from "components/Appointment/Confirm";
 import Error from "components/Appointment/Error";
 import useVisualMode from "hooks/useVisualMode";
 
+// Constants
+const EMPTY = "EMPTY";
+const SHOW = "SHOW";
+const CREATE = "CREATE";
+const SAVING = "SAVING";
+const CONFIRM = "CONFIRM";
+const DELETING = "DELETING";
+const EDIT = "EDIT";
+const ERROR_SAVE="ERROR_SAVE";
+const ERROR_DELETE="ERROR_DELETE";
+
 export default function Appointment(props) {
   function saveAppointment(name, interviewer) {
      const interview = {
@@ -18,9 +29,11 @@ export default function Appointment(props) {
       interviewer
     };
 
+    const isCreate = (modeObject.mode === CREATE) ? true : false;
+
     modeObject.transition(SAVING);
 
-    props.bookInterview(props.id, interview)
+    props.bookInterview(props.id, interview, isCreate)
     .then(()=>{
         modeObject.transition(SHOW);
       }
@@ -54,17 +67,6 @@ export default function Appointment(props) {
     modeObject.transition(EDIT);
   }
 
-  // Constants
-  const EMPTY = "EMPTY";
-  const SHOW = "SHOW";
-  const CREATE = "CREATE";
-  const SAVING = "SAVING";
-  const CONFIRM = "CONFIRM";
-  const DELETING = "DELETING";
-  const EDIT = "EDIT";
-  const ERROR_SAVE="ERROR_SAVE";
-  const ERROR_DELETE="ERROR_DELETE";
-
   let inputMode = EMPTY;
 
   if (props.interview) inputMode = SHOW;
@@ -72,12 +74,18 @@ export default function Appointment(props) {
 
   const modeObject = useVisualMode(inputMode);
 
+  useEffect(() => {
+    if (props.interview) modeObject.transition(SHOW);
+    else modeObject.transition(EMPTY);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.interview]);
+
   return (
     // <article className="appointment">{props.time ? `Appointment at ${props.time}` : 'No Appointments'}</article>
     <article className="appointment">
       <Header time={props.time}></Header>
       {modeObject.mode === EMPTY && <Empty onAdd={() => modeObject.transition(CREATE)} />}
-      {modeObject.mode === SHOW && (
+      {modeObject.mode === SHOW && props.interview && (
         <Show
           student={props.interview.student}
           interviewer={props.interview.interviewer}

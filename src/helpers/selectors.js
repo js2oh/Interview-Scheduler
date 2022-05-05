@@ -6,7 +6,7 @@ function getAppointmentsForDay(state, day) {
 }
 
 // Interview object: { "student": String, "interviewer": number }
-// New interview object: { "student": String, "interviewer": String }
+// New interview object: { "student": String, "interviewer": object {id, name, avatar} }
 // Given the interview object above, search for the interviewer name
 // and return the new interview object but with this found interviewer name
 function getInterview(state, interview) {
