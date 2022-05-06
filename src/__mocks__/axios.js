@@ -65,5 +65,25 @@ export default {
     status: 200,
     statusText: "OK",
     data: fixtures[urlTable[url]]
-  }))
+  })),
+  put: jest.fn((url, obj) => {
+    if (obj.isCreate) {
+      const id = Number(url.split("/").pop());
+      const dayIndex = fixtures.days.findIndex(day=>day.appointments.includes(id));
+      fixtures.days[dayIndex].spots--;
+    }
+    return Promise.resolve({
+      status: 204,
+      statusText: "No Content"
+    });
+  }),
+  delete: jest.fn((url) => {
+    const id = Number(url.split("/").pop());
+    const dayIndex = fixtures.days.findIndex(day=>day.appointments.includes(id));
+    fixtures.days[dayIndex].spots++;
+    return Promise.resolve({
+      status: 204,
+      statusText: "No Content"
+    });
+  })
 }

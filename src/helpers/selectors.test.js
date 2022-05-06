@@ -44,6 +44,12 @@ const state = {
   }
 };
 
+it("getAppointmentsForDay returns an empty array", () => {
+  const empty = [];
+  const result = getAppointmentsForDay(null, "Monday");
+  expect(result).toEqual(empty);
+});
+
 test("getAppointmentsForDay returns an array", () => {
   const result = getAppointmentsForDay(state, "Monday");
   expect(Array.isArray(result)).toBe(true);
@@ -89,7 +95,11 @@ test("getInterview returns null if no interview is booked", () => {
   expect(result).toBeNull();
 });
 
-
+it("getInterviewersForDay", () => {
+  const empty = [];
+  const result = getInterviewersForDay(null, "Monday");
+  expect(result).toEqual(empty);
+});
 
 test("getInterviewersForDay returns an array", () => {
   const result = getInterviewersForDay(state, "Monday");

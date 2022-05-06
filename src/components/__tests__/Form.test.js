@@ -1,16 +1,20 @@
 import React from "react";
 
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, getAllByTestId, getByAltText, queryByText, getByText } from "@testing-library/react";
 
 import Form from "components/Appointment/Form";
 
 describe("Form", () => {
-
   const interviewers = [
     {
       id: 1,
       name: "Sylvia Palmer",
       avatar: "https://i.imgur.com/LpaY82x.png"
+    },
+    {
+      id: 2,
+      name: "Tori Malcolm",
+      avatar: "https://i.imgur.com/Nmx0Qxo.png"
     }
   ];
 
@@ -84,7 +88,7 @@ describe("Form", () => {
     /* 5. onSave is not called */
     expect(onSave).not.toHaveBeenCalled();
 
-    /* 6. Type the student name and clicke the save button */
+    /* 6. Type the student name and click the save button */
     fireEvent.change(getByPlaceholderText("Enter Student Name"), {
       target: { value: "Lydia Miller-Jones" }
     });
@@ -127,4 +131,53 @@ describe("Form", () => {
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
+  it("select and unselect interviewers", () => {
+    /* 1. Render the Form with interviewers */
+    const { container } = render(<Form interviewers={interviewers} />);
+
+    // 2. get InterviewListItem elements in an array.
+    const interviews = getAllByTestId(container, "interviewer");
+
+    // 3. click the interviewer "Sylvia Palmer" to select.
+    fireEvent.click(getByAltText(interviews[0], "Sylvia Palmer"));
+
+    // 4. check the text "Sylvia Palmer" is displayed.
+    expect(getByText(interviews[0], "Sylvia Palmer")).toBeInTheDocument();
+    
+    // 5. click the interviewer "Sylvia Palmer" again to unselect.
+    fireEvent.click(getByAltText(interviews[0], "Sylvia Palmer"));
+
+    // 6. check the text "Sylvia Palmer" is unclicked.
+    expect(queryByText(interviews[0], "Sylvia Palmer")).toBeNull();
+
+    // 7. click the interviewer "Tori Malcolm" to select.
+    fireEvent.click(getByAltText(interviews[1], "Tori Malcolm"));
+
+    // 8. check the text "Tori Malcolm" is displayed.
+    expect(getByText(interviews[1], "Tori Malcolm")).toBeInTheDocument();
+
+    // 9. click the interviewer "Sylvia Palmer" to select.
+    fireEvent.click(getByAltText(interviews[0], "Sylvia Palmer"));
+
+    // 6. check the text "Tori Malcolm" is unclicked.
+    expect(queryByText(interviews[1], "Tori Malcolm")).toBeNull();
+  });
+
+  it("enter key disabled", () => {
+    // 1. Create the mock onSave function
+    const onSave = jest.fn();
+
+    // 2. Render the Form with interviewers, name, and interviewer selected
+    const { getByPlaceholderText, queryByText } = render(<Form interviewers={interviewers} student="Lydia Miller-Jones" interviewer={1} />);
+
+    // 3. Press Enter key on the input element
+    fireEvent.keyDown(getByPlaceholderText("Enter Student Name"), {key: 'Enter', code: 'Enter', charCode: 13});
+
+    // 4. check that the validation message is not displayed
+    expect(queryByText(/student name cannot be blank/i)).toBeNull();
+    expect(queryByText(/Interviewer must be selected/i)).toBeNull();
+
+    // 5. check that the onSave function is not called
+    expect(onSave).not.toHaveBeenCalled();
+  });
 });

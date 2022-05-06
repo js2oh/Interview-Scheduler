@@ -67,11 +67,8 @@ export default function Appointment(props) {
     modeObject.transition(EDIT);
   }
 
-  let inputMode = EMPTY;
-
-  if (props.interview) inputMode = SHOW;
-  else inputMode = EMPTY;
-
+  let inputMode = (props.interview) ? SHOW : EMPTY;
+  
   const modeObject = useVisualMode(inputMode);
 
   useEffect(() => {
@@ -82,9 +79,11 @@ export default function Appointment(props) {
 
   return (
     // <article className="appointment">{props.time ? `Appointment at ${props.time}` : 'No Appointments'}</article>
-    <article className="appointment">
+    <article className="appointment" data-testid="appointment">
       <Header time={props.time}></Header>
-      {modeObject.mode === EMPTY && <Empty onAdd={() => modeObject.transition(CREATE)} />}
+      {modeObject.mode === EMPTY && props.time !== "5pm" && (
+        <Empty onAdd={() => modeObject.transition(CREATE)} />
+      )}
       {modeObject.mode === SHOW && props.interview && (
         <Show
           student={props.interview.student}
@@ -111,12 +110,12 @@ export default function Appointment(props) {
       )}
       {modeObject.mode === SAVING && (
         <Status
-          message={`Saving.`}
+          message={`Saving`}
         />
       )}
       {modeObject.mode === DELETING && (
         <Status
-          message={`Deleting.`}
+          message={`Deleting`}
         />
       )}
       {modeObject.mode === CONFIRM && (
