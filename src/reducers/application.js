@@ -12,7 +12,23 @@ export function reducer(state, action) {
     case SET_APPLICATION_DATA:
       return {...state, days: action.days, appointments: action.appointments, interviewers: action.interviewers }
     case SET_INTERVIEW: {
-      return {...state, appointments: {...state.appointments, [action.id]: {...state.appointments[action.id], interview: action.interview}}};
+      const appointments = {
+        ...state.appointments, 
+        [action.id]: {
+          ...state.appointments[action.id], 
+          interview: action.interview
+        }
+      };
+
+      const appointDay = state.days.find(d => d.appointments.includes(action.id));
+      const numSpots = appointDay.appointments.filter(id => appointments[id].interview===null).length;
+
+      const days = state.days.map(day => (day.name === appointDay.name) ? {
+        ...day, 
+        spots: numSpots
+      } : {...day});
+    
+      return {...state, appointments, days};
     }
     case SET_SPOTS: {
       const dayIndex = state.days.findIndex(day=>day.appointments.includes(action.id));
